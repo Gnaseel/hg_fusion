@@ -36,7 +36,7 @@ bool getIOU(Box sor, Box tar, int temp){
 
     float dx, dy, dz;
     dx=dy=dz=0;
-    float threshold=0;
+    float threshold=0.3;
     if (sor.maxX <= tar.minX || tar.maxX <= sor.minX ){
         dx=0;
         cout<<"XZERO   ";
@@ -136,7 +136,7 @@ void boxingCallback(const sensor_msgs::PointCloud2ConstPtr& msg){
     pcl::fromROSMsg(*msg,*pCloud);
     pcl::PointCloud<pcl::PointXYZI>::iterator iter;
 
-    Box box[50];
+    Box box[100];
     int arrayLength=0;
     for(iter = pCloud->begin();iter!=pCloud->end();iter++){
         int intensity = iter->intensity;
@@ -170,8 +170,7 @@ void boxingCallback(const sensor_msgs::PointCloud2ConstPtr& msg){
     else{
         for(int i=1;i<=arrayLength;i++){
             bool isNew=true;
-            int index=99;
-            
+            int index=-1;
             int temp=0;
             for(list<Box>::iterator itBox = preBoxes.begin() ; itBox!=preBoxes.end() ; itBox++){
                 if(getIOU(*itBox, box[i],temp)){
@@ -181,6 +180,7 @@ void boxingCallback(const sensor_msgs::PointCloud2ConstPtr& msg){
                 }
                 temp++;
             }
+            if(index ==-1) index = objectIndex++;
             box[i].index = index;
         }
     }
@@ -197,7 +197,7 @@ void boxingCallback(const sensor_msgs::PointCloud2ConstPtr& msg){
         marker.ns = "box";
         marker.id = i;
         marker.type = visualization_msgs::Marker::CUBE;
-        marker.action = visualization_msgs::Marker::ADD;
+        marker.action = visualization_msgs::Marker::MODIFY;
         marker.pose.position.x = (box[i].minX + box[i].maxX)/2;
         marker.pose.position.y = (box[i].minY + box[i].maxY)/2;
         marker.pose.position.z = (box[i].minZ + box[i].maxZ)/2;
@@ -212,8 +212,8 @@ void boxingCallback(const sensor_msgs::PointCloud2ConstPtr& msg){
         marker.color.g = 1.0f;
         marker.color.b = 0.0f;
         marker.color.a = 0.4;
-        marker.lifetime = ros::Duration();
-        markerArray.markers.push_back(marker);
+        // marker.lifetime = ros::Duration();
+
 
         visualization_msgs::Marker markerText;
         markerText.header.frame_id = "/velodyne";
@@ -230,13 +230,20 @@ void boxingCallback(const sensor_msgs::PointCloud2ConstPtr& msg){
         markerText.pose.orientation.y = 0.0;
         markerText.pose.orientation.z = 0.0;
         markerText.pose.orientation.w = 1.0;
-        markerText.scale.z = 0.3;
+        markerText.scale.z = 0.5;
         markerText.color.r = 1.0f;
         markerText.color.g = 0.0f;
         markerText.color.b = 0.0f;
         markerText.color.a = 0.4;
         // markerText.lifetime = ros::Duration();
-        markerTextArray.markers.push_back(markerText);
+
+        if(marker.scale.x<0.3 || marker.scale.y<0.3 || marker.scale.z<0.3) {
+            cout<<"NOPE"<<endl;
+        }
+        else{
+            markerArray.markers.push_back(marker);
+            markerTextArray.markers.push_back(markerText);
+        }
     }
 
 
@@ -245,7 +252,6 @@ void boxingCallback(const sensor_msgs::PointCloud2ConstPtr& msg){
     for(int i=1;i<=arrayLength;i++){
         preBoxes.push_back(box[i]);
     }
-
 
     marker_pub.publish(markerArray);
     markerText_pub.publish(markerTextArray);
@@ -257,7 +263,7 @@ int main(int argc, char** argv){
     ros::Subscriber clustered_sub = nh.subscribe<sensor_msgs::PointCloud2>("/velodyne_filtered", 10, boxingCallback);
     marker_pub = nh.advertise<visualization_msgs::MarkerArray>("visualization_marker", 1);
     markerText_pub = nh.advertise<visualization_msgs::MarkerArray>("visualization_markerText", 1);
-    ros::Rate r(1);
+    ros::Rate r(100);
     while(ros::ok()){
         ros::spinOnce();
         r.sleep();

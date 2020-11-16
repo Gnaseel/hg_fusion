@@ -56,7 +56,7 @@ pcl::PCLPointCloud2 cloud_cb(pcl::PCLPointCloud2ConstPtr input)
   tree->setInputCloud(cloud_filtered);
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<PointT> ECE;
-  ECE.setClusterTolerance(0.5); // 1m
+  ECE.setClusterTolerance(0.4); // 1m
   ECE.setMinClusterSize(15); // 몇 개부터 한 군집?
   ECE.setMaxClusterSize(10000); // 몇 개까지 한 군집?
   ECE.setSearchMethod(tree);
@@ -98,7 +98,7 @@ pcl::PCLPointCloud2 roi_filter(pcl::PCLPointCloud2ConstPtr cloudPtr)
   pcl::PCLPointCloud2 output;
   pcl::CropBox<pcl::PCLPointCloud2> cropFilter;
   cropFilter.setInputCloud(cloudPtr);
-  cropFilter.setMin(Eigen::Vector4f(0, -5, -1.0, 0));
+  cropFilter.setMin(Eigen::Vector4f(-5, -5, -0.5, 0));
   cropFilter.setMax(Eigen::Vector4f(5.0, 5, 4.5, 0));
   cropFilter.filter(output);
 //roi_pub.publish(output);
