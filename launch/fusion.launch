@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
+
  <node pkg="hg_fusion" type="Prefiltering" name="Prefiltering" output="screen"/>
  <node pkg="hg_fusion" type="Boxing" name="Boxing" output="screen"/>
  <node pkg="hg_fusion" type="vision_filter.py" name="vision_filter" output="screen"/>
