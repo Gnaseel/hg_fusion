@@ -57,14 +57,15 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
 )
-add_executable(Calibration src/Calibration.cpp)
-add_dependencies(Calibration ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(Calibration ${catkin_LIBRARIES})
+add_executable(Boxing src/Boxing.cpp)
+add_dependencies(Boxing ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(Boxing ${catkin_LIBRARIES})
 
-add_executable(Prefilltering src/Prefilltering.cpp)
-add_dependencies(Prefilltering ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(Prefilltering ${catkin_LIBRARIES})
+add_executable(Prefiltering src/Prefiltering.cpp)
+add_dependencies(Prefiltering ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(Prefiltering ${catkin_LIBRARIES})
 
-add_executable(Model_gen src/Model_gen.cpp)
-add_dependencies(Model_gen ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(Model_gen ${catkin_LIBRARIES})
+
+#add_executable(Model_gen src/Model_gen.cpp)
+#add_dependencies(Model_gen ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+#target_link_libraries(Model_gen ${catkin_LIBRARIES})
